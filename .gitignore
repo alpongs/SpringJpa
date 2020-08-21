@@ -7,6 +7,7 @@
 *.iml
 out
 gen
+docs
 ### Java template
 # Compiled class file
 *.class
