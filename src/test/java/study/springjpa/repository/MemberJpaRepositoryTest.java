@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -22,8 +21,6 @@ class MemberJpaRepositoryTest {
 
     @Autowired
     private MemberJpaRepository repository;
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Autowired
     private EntityManager em;
@@ -38,20 +35,6 @@ class MemberJpaRepositoryTest {
         assertThat(saveMember.getId()).isEqualTo(findMember.getId());
         assertThat(saveMember.getName()).isEqualTo(findMember.getName());
         assertThat(saveMember).isEqualTo(findMember);
-    }
-
-    @Test
-    void testMember() {
-        Member memberB = new Member("MemberB");
-        Member saveMember = memberRepository.save(memberB);
-
-        Optional<Member> byId = memberRepository.findById(saveMember.getId());
-        if (byId.isPresent()) {
-            Member member = byId.get();
-            assertThat(saveMember.getId()).isEqualTo(member.getId());
-            assertThat(saveMember.getName()).isEqualTo(member.getName());
-            assertThat(saveMember).isEqualTo(member);
-        }
     }
 
     @Test
