@@ -10,4 +10,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByName(String name);
 
+    List<Member> findByNameAndAgeGreaterThan(String name, int age);
 }

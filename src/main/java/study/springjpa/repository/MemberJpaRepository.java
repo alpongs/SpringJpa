@@ -91,4 +91,17 @@ public class MemberJpaRepository {
     public long count() {
         return em.createQuery("select count(m) from Member m", Long.class).getSingleResult();
     }
+
+    /**
+     * 회원정보 및 나이 정보를 이용한 검색 인터페이스.
+     * @param name name
+     * @param age age
+     * @return 검색된 리스트 정보.
+     */
+    List<Member> findByNameAndAgeGreaterThan(String name, int age) {
+        return em.createQuery("select m from Member m where m.name = :name and m.age > :age", Member.class)
+            .setParameter("name", name)
+            .setParameter("age", age)
+            .getResultList();
+    }
 }
