@@ -6,9 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import study.springjpa.model.Member;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -37,5 +40,48 @@ class MemberRepositoryTest {
             Member member = optionalMember.get();
             System.out.println("member = " + member);
         }
+    }
+
+    @Test
+    public void baseCRUD() {
+
+        // given
+        Member member1 = new Member("Member1", 10);
+        Member member2 = new Member("Member2", 20);
+        Member member3 = new Member("Member3", 30);
+        Member member4 = new Member("Member4", 40);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        // 단건 조회....
+        Member findMember1 = memberRepository.findById(member1.getId()).get();
+        Member findMember2 = memberRepository.findById(member2.getId()).get();
+        Member findMember3 = memberRepository.findById(member3.getId()).get();
+        Member findMember4 = memberRepository.findById(member4.getId()).get();
+
+        // 리스트 조회 검증.
+        List<Member> memberList = memberRepository.findAll();
+
+        // then
+        // 단건 조회 결과...
+        assertThat(findMember1).isEqualTo(member1);
+        assertThat(findMember2).isEqualTo(member2);
+        assertThat(findMember3).isEqualTo(member3);
+        assertThat(findMember4).isEqualTo(member4);
+
+        // 리스트 조회 결과..
+        assertThat(memberList.size()).isEqualTo(4);
+
+        // 삭제 검증
+        memberRepository.delete(member1);
+        memberRepository.delete(member2);
+        memberRepository.delete(member3);
+        memberRepository.delete(member4);
+
+        long count = memberRepository.count();
+        assertThat(count).isEqualTo(0);
     }
 }
