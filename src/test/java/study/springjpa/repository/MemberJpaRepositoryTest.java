@@ -114,4 +114,29 @@ class MemberJpaRepositoryTest {
         long reCount = repository.count();
         assertThat(reCount).isEqualTo(0L);
     }
+
+    @Test
+    public void findByNameAndAgeGraterThan() {
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        List<Member> findList = repository.findByNameAndAgeGreaterThan("Member2", 10);
+        assertThat(findList.size()).isEqualTo(1L);
+
+        for (Member member : findList) {
+            assertThat(member.getName()).isEqualTo("Member2");
+            assertThat(member.getAge()).isEqualTo(20);
+        }
+    }
 }
