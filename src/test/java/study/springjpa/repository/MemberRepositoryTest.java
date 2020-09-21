@@ -84,4 +84,42 @@ class MemberRepositoryTest {
         long count = memberRepository.count();
         assertThat(count).isEqualTo(0);
     }
+
+    @Test
+    void testCount() {
+        // given
+        Member member1 = new Member("Member1", 10);
+        Member member2 = new Member("Member2", 20);
+        Member member3 = new Member("Member3", 30);
+        Member member4 = new Member("Member4", 40);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> top3ByAge = memberRepository.findTop3ByAgeGreaterThan(13);
+
+        // then
+        assertThat(top3ByAge.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testFindTop() {
+        Member member1 = new Member("Member1", 10);
+        Member member2 = new Member("Member2", 20);
+        Member member3 = new Member("Member3", 30);
+        Member member4 = new Member("Member4", 40);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        //when
+        List<Member> topByAge = memberRepository.findTopByAge(10);
+
+        for (Member member : topByAge) {
+            System.out.println("member = " + member);
+        }
+    }
 }
