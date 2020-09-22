@@ -150,4 +150,25 @@ class MemberRepositoryTest {
         // then
         assertThat(members.size()).isEqualTo(1);
     }
+
+    @Test
+    void findByUser() {
+        // given
+        Member member1 = new Member("Member1", 10);
+        Member member2 = new Member("Member2", 20);
+        Member member3 = new Member("Member3", 30);
+        Member member4 = new Member("Member4", 40);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> findMember1 = memberRepository.findByUser("Member1", 10);
+        List<Member> notFoundUser = memberRepository.findByUser("member1", 9);
+
+        // then
+        assertThat(findMember1.size()).isEqualTo(1);
+        assertThat(notFoundUser.size()).isZero();
+    }
 }

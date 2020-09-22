@@ -47,6 +47,21 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     boolean existsByAge(int age);
 
+    /**
+     * NamedQuery 이용한 Member 이름으로 검색하기.
+     * @param name  검색하고자 하는 이름.
+     * @return      검색된 Member 리스트.
+     */
     @Query(name = "Member.findByName")
     List<Member> findByUsername(@Param("name") String name);
+
+
+    /**
+     * Query, Annotation 이용한 JPQL 쿼리 작성.
+     * @param name  검색하는 이름.
+     * @param age   검색하는 나이.
+     * @return      검색된 Member 리스트.
+     */
+    @Query("select m from Member m where m.name = :name and m.age = :age")
+    List<Member> findByUser(@Param("name")String name, @Param("age")int age);
 }
