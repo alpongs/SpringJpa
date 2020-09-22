@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,6 +227,30 @@ class MemberRepositoryTest {
         for (MemberDto member : memberDtoList) {
             System.out.println("member = " + member);
         }
+    }
 
+    @Test
+    void findByNames() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<String> asList = Arrays.asList("Member1", "Member2");
+        List<Member> members = memberRepository.findByNames(asList);
+
+        // then
+        assertThat(members.size()).isEqualTo(asList.size());
     }
 }

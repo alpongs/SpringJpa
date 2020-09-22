@@ -73,6 +73,19 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m.name from Member m")
     List<String> findUsernameList();
 
+    /**
+     * DTO 깩체를 통한 JPQL.
+     * @return MemberDto 객체 리스트.
+     */
     @Query("select new study.springjpa.model.dto.MemberDto(m.id, m.name, t.name) from Member m join m.team t")
     List<MemberDto> findMemberDtoList();
+
+    /**
+     * Collection 타입으로 in 절 지원.
+     * Collection 파라미터 바인딩.
+     * @param names List 이름 리스트.
+     * @return List Member Entity.
+     */
+    @Query("select m from Member m where m.name in :names")
+    List<Member> findByNames(@Param("names")List<String> names);
 }
