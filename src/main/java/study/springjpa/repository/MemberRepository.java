@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 import study.springjpa.model.Member;
+import study.springjpa.model.dto.MemberDto;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -71,4 +72,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     @Query("select m.name from Member m")
     List<String> findUsernameList();
+
+    @Query("select new study.springjpa.model.dto.MemberDto(m.id, m.name, t.name) from Member m join m.team t")
+    List<MemberDto> findMemberDtoList();
 }

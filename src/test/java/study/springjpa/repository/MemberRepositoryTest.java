@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import study.springjpa.model.Member;
+import study.springjpa.model.Team;
+import study.springjpa.model.dto.MemberDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +23,8 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     void memberCreate() {
@@ -192,6 +196,35 @@ class MemberRepositoryTest {
 
         for (String s : usernameList) {
             System.out.println("usernameList = " + s);
+        }
+    }
+
+    @Test
+    void findMemberDto() {
+
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<MemberDto> memberDtoList = memberRepository.findMemberDtoList();
+
+        // then
+        assertThat(memberDtoList.size()).isEqualTo(4);
+
+        for (MemberDto member : memberDtoList) {
+            System.out.println("member = " + member);
         }
 
     }
