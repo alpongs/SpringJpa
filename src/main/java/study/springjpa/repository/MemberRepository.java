@@ -1,9 +1,12 @@
 package study.springjpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import study.springjpa.model.Member;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+
+import study.springjpa.model.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -44,4 +47,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     boolean existsByAge(int age);
 
+    @Query(name = "Member.findByName")
+    List<Member> findByUsername(@Param("name") String name);
 }

@@ -1,5 +1,6 @@
 package study.springjpa.repository;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,14 +37,17 @@ class MemberRepositoryTest {
         memberRepository.save(member5);
 
         Optional<Member> optionalMember = memberRepository.findById(member1.getId());
+
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             System.out.println("member = " + member);
+            Assertions.assertNotNull(optionalMember);
         }
+
     }
 
     @Test
-    public void baseCRUD() {
+    void baseCRUD() {
 
         // given
         Member member1 = new Member("Member1", 10);
@@ -57,10 +61,10 @@ class MemberRepositoryTest {
 
         // when
         // 단건 조회....
-        Member findMember1 = memberRepository.findById(member1.getId()).get();
-        Member findMember2 = memberRepository.findById(member2.getId()).get();
-        Member findMember3 = memberRepository.findById(member3.getId()).get();
-        Member findMember4 = memberRepository.findById(member4.getId()).get();
+        Member findMember1 = memberRepository.findById(member1.getId()).orElse(null);
+        Member findMember2 = memberRepository.findById(member2.getId()).orElse(null);
+        Member findMember3 = memberRepository.findById(member3.getId()).orElse(null);
+        Member findMember4 = memberRepository.findById(member4.getId()).orElse(null);
 
         // 리스트 조회 검증.
         List<Member> memberList = memberRepository.findAll();
@@ -82,7 +86,7 @@ class MemberRepositoryTest {
         memberRepository.delete(member4);
 
         long count = memberRepository.count();
-        assertThat(count).isEqualTo(0);
+        assertThat(count).isEqualTo(0L);
     }
 
     @Test
@@ -121,5 +125,29 @@ class MemberRepositoryTest {
         for (Member member : topByAge) {
             System.out.println("member = " + member);
         }
+
+        // then
+        assertThat(topByAge.size()).isEqualTo(3);
+    }
+
+
+    @Test
+    void namedQueryFindByUser() {
+
+        // given
+        Member member1 = new Member("Member1", 10);
+        Member member2 = new Member("Member2", 20);
+        Member member3 = new Member("Member3", 30);
+        Member member4 = new Member("Member4", 40);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> members = memberRepository.findByUsername("Member1");
+
+        // then
+        assertThat(members.size()).isEqualTo(1);
     }
 }
