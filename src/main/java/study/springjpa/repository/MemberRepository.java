@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 import study.springjpa.model.Member;
 import study.springjpa.model.dto.MemberDto;
@@ -17,6 +18,20 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @return 찾는 경우 해당 Member Object.
      */
     List<Member> findByName(String name);
+
+    /**
+     * 이름으로 단건 조회.
+     * @param name      이름.
+     * @return          단일 Member.
+     */
+    Member findOneByName(String name);
+
+    /**
+     * Optional 사용하여 결과 처리.
+     * @param name      이름.
+     * @return          Optional Member.
+     */
+    Optional<Member> findOptionalByName(String name);
 
     /**
      * 이름 및 나이로 해당 정보를 검색하고자 할때 사용된다.
@@ -88,4 +103,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     @Query("select m from Member m where m.name in :names")
     List<Member> findByNames(@Param("names")List<String> names);
+
 }

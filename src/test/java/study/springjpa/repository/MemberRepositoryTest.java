@@ -1,6 +1,5 @@
 package study.springjpa.repository;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +15,8 @@ import study.springjpa.model.Team;
 import study.springjpa.model.dto.MemberDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 @Transactional
@@ -46,7 +47,7 @@ class MemberRepositoryTest {
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             System.out.println("member = " + member);
-            Assertions.assertNotNull(optionalMember);
+            assertNotNull(optionalMember);
         }
 
     }
@@ -252,5 +253,35 @@ class MemberRepositoryTest {
 
         // then
         assertThat(members.size()).isEqualTo(asList.size());
+    }
+
+    @Test
+    void findOneByName() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        Member findMember = memberRepository.findOneByName("Member1");
+
+        // 결과가 없을때, javax.persistence.NoResultException 발생되어 예외처리를 해야 했다.
+        // SpringJPA 에서는 단건 조회할때 예외가 발생하면 예외를 무시하고 null 반환해준다.
+        Member notFound = memberRepository.findOneByName("Member10");
+
+        // then
+        assertThat(findMember.getAge()).isEqualTo(10);
+        assertThat(findMember.getName()).isEqualTo("Member1");
+        assertNull(notFound);
     }
 }
