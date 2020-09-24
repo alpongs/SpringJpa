@@ -104,4 +104,30 @@ public class MemberJpaRepository {
             .setParameter("age", age)
             .getResultList();
     }
+
+    /**
+     * JPQL 이용한 Page 형식의 리스트 호출.
+     * @param age       나이
+     * @param offset    페이지 번호.
+     * @param limit     한페이지에 보여줄 수량.
+     * @return          Member 리스트.
+     */
+    List<Member> findByPage(int age, int offset, int limit) {
+        return em.createQuery("select m from Member m where m.age = :age order by m.id desc", Member.class)
+            .setParameter("age", age)
+            .setFirstResult(offset)
+            .setMaxResults(limit)
+            .getResultList();
+    }
+
+    /**
+     * 조건에 부합하는 전체 카운트 정보 호출.
+     * @param age       나이.
+     * @return          검색된 수량.
+     */
+    long totalCount(int age) {
+        return em.createQuery("select count(m) from Member m where m.age = :age", Long.class)
+            .setParameter("age", age)
+            .getSingleResult();
+    }
 }

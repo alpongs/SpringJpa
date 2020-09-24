@@ -7,6 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 
@@ -116,7 +117,7 @@ class MemberJpaRepositoryTest {
     }
 
     @Test
-    public void findByNameAndAgeGraterThan() {
+    void findByNameAndAgeGraterThan() {
         Team teamA = new Team("TeamA");
         Team teamB = new Team("TeamB");
         em.persist(teamA);
@@ -137,6 +138,40 @@ class MemberJpaRepositoryTest {
         for (Member member : findList) {
             assertThat(member.getName()).isEqualTo("Member2");
             assertThat(member.getAge()).isEqualTo(20);
+        }
+    }
+
+    @Test
+    void findByPage() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Random random = new Random();
+        for (int i = 0; i <= 500; i++) {
+            Member member = new Member("Member_" + i, 10, teamA);
+            em.persist(member);
+        }
+
+        // when
+        // 페이지 계산 공식 ...
+        // totalPage = totalCount / size ...
+        // 마지막 페이지...
+        // 최초 페이지...
+        List<Member> byPage = repository.findByPage(10, 100,  10);
+        long count = repository.totalCount(10);
+
+        // then
+        assertThat(byPage.size()).isEqualTo(10);
+        assertThat(count)
+            .isEqualTo(501);
+
+
+        // print
+        for (Member member : byPage) {
+            System.out.println("member = " + member);
         }
     }
 }
