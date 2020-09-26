@@ -3,6 +3,10 @@ package study.springjpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +19,10 @@ import study.springjpa.model.Team;
 import study.springjpa.model.dto.MemberDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
@@ -283,5 +289,71 @@ class MemberRepositoryTest {
         assertThat(findMember.getAge()).isEqualTo(10);
         assertThat(findMember.getName()).isEqualTo("Member1");
         assertNull(notFound);
+    }
+
+    @Test
+    void findPageByNameTest() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        for (int i = 0; i <= 500; i++) {
+            Member member = new Member("Member_" + i, 10, teamA);
+            memberRepository.save(member);
+        }
+
+        // when
+        // 검색 조건 나이 10살
+        // 정렬 조건 이름으로 내림 차순
+        // 페이징 조건 첫 번째 페이지, 페이지당 보여줄 데이터는 3건
+
+        PageRequest of = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"));
+        Page<Member> pageByAge = memberRepository.findPageByAge(10, of);
+
+        // then
+        List<Member> content = pageByAge.getContent();                  // 조회된 컨텐츠 데이터.
+        assertThat(content.size()).isEqualTo(10);                       // 페이지당 보여야 될 개수.
+        assertTrue(pageByAge.isFirst());
+        //assertThat(pageByAge.getTotalElements()).isEqualTo(501);      // 조회된 전체 카운트.
+        //assertThat(pageByAge.getTotalPages()).isEqualTo(50);          // 페이지 번호
+        //assertThat(pageByAge.getNumber()).isEqualTo(0);               // 0번 페이지.
+        System.out.println(pageByAge.getTotalElements());               // 검색된 전체 카운트.
+        System.out.println(pageByAge.getTotalPages());                  // 전체 페이지 개수.
+        System.out.println(pageByAge.getNumber());                      // 조회한 페이지.
+        System.out.println(pageByAge.getNumberOfElements());            // 조회된 페이지의 개수.
+        System.out.println(pageByAge.getSize());                        //
+        System.out.println(pageByAge.getSort().toString());
+        System.out.println(pageByAge.getPageable().toString());
+    }
+
+    @Test
+    void findSliceByAgeTest() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        for (int i = 0; i <= 500; i++) {
+            Member member = new Member("Member_" + i, 10, teamA);
+            memberRepository.save(member);
+        }
+
+        // when
+        PageRequest of = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"));
+        Slice<Member> sliceByAge = memberRepository.findSliceByAge(10, of);
+
+        // then
+        List<Member> content = sliceByAge.getContent();
+        assertThat(content.size()).isEqualTo(10);
+
+        System.out.println("slice Number : " + sliceByAge.getNumber());
+        assertThat(sliceByAge.getSize()).isEqualTo(10);
+        System.out.println("NumberOfElements : " + sliceByAge.getNumberOfElements());
+        System.out.println("hasContents : "  + sliceByAge.hasContent());
+        assertFalse(sliceByAge.isLast());
+
     }
 }

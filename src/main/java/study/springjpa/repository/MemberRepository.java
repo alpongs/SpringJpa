@@ -1,5 +1,9 @@
 package study.springjpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -103,5 +107,19 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     @Query("select m from Member m where m.name in :names")
     List<Member> findByNames(@Param("names")List<String> names);
+
+    /**
+     * Count Query 사용.
+     * @param name      이름
+     * @param pageable  페이지.
+     * @return Member List.
+     */
+    Page<Member> findPageByAge(int age, Pageable pageable);
+
+    Slice<Member> findSliceByAge(int age, Pageable pageable);
+
+    List<Member> findListByAge(int age, Pageable pageable);
+
+    List<Member> findByAge(int age, Sort sort);
 
 }
