@@ -110,16 +110,44 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /**
      * Count Query 사용.
-     * @param name      이름
+     * @param age      이름
      * @param pageable  페이지.
      * @return Member List.
      */
     Page<Member> findPageByAge(int age, Pageable pageable);
 
+    /**
+     * Slice 적용하여 Page 정보 찾아오기 limit +1 이된다.
+     * @param age           나이.
+     * @param pageable      페이지 정보.
+     * @return              검색된 리스트.
+     */
     Slice<Member> findSliceByAge(int age, Pageable pageable);
 
+    /**
+     * 나이 조건을 이용하여 페이지 찾아오기 위한 인터페이스.
+     * @param age           나이.
+     * @param pageable      페이지 정보.
+     * @return              검색된 리스트.
+     */
     List<Member> findListByAge(int age, Pageable pageable);
 
+    /**
+     * Sort 조건을 이용하여 정렬하는 인터페이스.
+     * @param age           나이.
+     * @param sort          정렬.
+     * @return              검색된 리스트.
+     */
     List<Member> findByAge(int age, Sort sort);
+
+    /**
+     * Count Query 분리 후 Query 동작.
+     * 왜? 분류했을까?? 고민을 해봐야 한다.
+     * @param pageable      페이지 정보.
+     * @return              검색된 리스트.
+     */
+    @Query(value = "select m from Member m where m.age = :age"
+        , countQuery = "select count(m.name) from Member m where m.age = :age")
+    Page<Member> findMemberAllCountBy(@Param("age") int age, Pageable pageable);
 
 }
