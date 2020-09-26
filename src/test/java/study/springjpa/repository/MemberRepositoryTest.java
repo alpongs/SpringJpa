@@ -373,9 +373,34 @@ class MemberRepositoryTest {
         PageRequest of = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"));
         Page<Member> memberAllCountBy = memberRepository.findMemberAllCountBy(10, of);
 
-
         // then
         assertThat(memberAllCountBy.getSize()).isEqualTo(10);
+    }
+
+    @Test
+    void MemberToMemberDtoConvert() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        for (int i = 0; i <= 500; i++) {
+            Member member = new Member("Member_" + i, 10, teamA);
+            memberRepository.save(member);
+        }
+
+        // when
+        PageRequest of = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"));
+        Page<Member> pageByAge = memberRepository.findPageByAge(10, of);
+
+        Page<MemberDto> map = pageByAge.map(m -> new MemberDto(m.getId(), m.getName(), m.getTeam().getName()));
+
+        // then
+        for (MemberDto memberDto : map) {
+            System.out.println("memberDto = " + memberDto);
+        }
+        assertThat(map.getSize()).isEqualTo(10);
 
     }
 }
