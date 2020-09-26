@@ -90,13 +90,13 @@ class MemberJpaRepositoryTest {
         em.persist(member4);
 
         // 단건 조회 검증.
-        Member findMember1 = repository.findById(member1.getId()).get();
+        Member findMember1 = repository.findById(member1.getId()).orElse(null);
         assertThat(findMember1).isEqualTo(member1);
-        Member findMember2 = repository.findById(member2.getId()).get();
+        Member findMember2 = repository.findById(member2.getId()).orElse(null);
         assertThat(findMember2).isEqualTo(member2);
-        Member findMember3 = repository.findById(member3.getId()).get();
+        Member findMember3 = repository.findById(member3.getId()).orElse(null);
         assertThat(findMember3).isEqualTo(member3);
-        Member findMember4 = repository.findById(member4.getId()).get();
+        Member findMember4 = repository.findById(member4.getId()).orElse(null);
         assertThat(findMember4).isEqualTo(member4);
 
         // 리스트 조회 검증
@@ -173,5 +173,32 @@ class MemberJpaRepositoryTest {
         for (Member member : byPage) {
             System.out.println("member = " + member);
         }
+    }
+
+    @Test
+    void bulkConditionAgePlusTest() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        // when
+        em.flush();
+        em.clear();
+        int updateCount = repository.bulkAgePlus(10);
+
+        // then
+        assertThat(updateCount).isEqualTo(4);
+
     }
 }
