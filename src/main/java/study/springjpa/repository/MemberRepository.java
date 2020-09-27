@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -160,4 +161,30 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("update Member m set m.age = m.age + 1 where m.age > :age")
     int bulkUpdateAge(@Param("age") int age);
+
+
+    @Query("select m from Member m left join fetch m.team")
+//    @Query("select m from Member m join fetch m.team")
+    List<Member> findMemberFetchJoin();
+
+
+    /**
+     * 공통 서버 Override 하여 기본적으로 JPQL 없이 FetchJoin 기능 사용.
+     * @return           조회된 Member List.
+     */
+    @Override
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findAll();
+
+
+    /**
+     * JPQL + EntityGraph
+     * @return          조회된 Member List.
+     */
+    @EntityGraph(attributePaths = {"team"})
+    @Query("select m from Member m")
+    List<Member> findMemberEntityGraph();
+
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findEntityGraphByName(@Param("name") String name);
 }

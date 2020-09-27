@@ -1,5 +1,6 @@
 package study.springjpa.repository;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -424,9 +425,116 @@ class MemberRepositoryTest {
         // when
         int result = memberRepository.bulkUpdateAge(12);
 
-
         // then
         assertThat(result).isEqualTo(3);
+    }
+
+    @Test
+    void findFetchJoinTest() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> memberFetchJoin = memberRepository.findMemberFetchJoin();
+
+
+
+        // then
+        assertThat(memberFetchJoin.size()).isEqualTo(4);
+
+        for (Member member : memberFetchJoin) {
+//            System.out.println("member = " + member);
+
+            // Hibername 기능으로 확인 ( 지연 로딩 여부를 확인. )
+            boolean initialized = Hibernate.isInitialized(member.getTeam());
+            System.out.println("initialized = " + initialized);
+        }
+    }
+
+    @Test
+    void fetchJoinSpringJPA() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> findAll = memberRepository.findAll();
+
+        // then
+        assertThat(findAll.size()).isEqualTo(4);
+    }
+
+    @Test
+    void findMemberEntityGraphTest() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> memberEntityGraph = memberRepository.findMemberEntityGraph();
+
+
+        // then
+        assertThat(memberEntityGraph.size()).isEqualTo(4);
+    }
+
+    @Test
+    void findEntityGraphByNameTest() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        List<Member> findMembers = memberRepository.findEntityGraphByName("Member1");
+
+        // then
+        assertThat(findMembers.size()).isEqualTo(1);
 
     }
+
 }

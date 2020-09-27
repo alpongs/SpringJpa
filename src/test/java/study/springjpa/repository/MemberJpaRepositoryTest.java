@@ -1,5 +1,6 @@
 package study.springjpa.repository;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceUnitUtil;
 
 import study.springjpa.model.Member;
 import study.springjpa.model.Team;
@@ -101,7 +103,7 @@ class MemberJpaRepositoryTest {
 
         // 리스트 조회 검증
         List<Member> findAll = repository.findAll();
-        assertThat(findAll.stream().count()).isEqualTo(4L);
+        assertThat(findAll.stream().count()).isEqualTo(4);
 
         long count = repository.count();
         assertThat(count).isEqualTo(4);
@@ -199,6 +201,50 @@ class MemberJpaRepositoryTest {
 
         // then
         assertThat(updateCount).isEqualTo(4);
+
+    }
+
+    @Test
+    void findMemberLazyTest() {
+        // given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        em.flush();
+        em.clear();
+
+        // when
+
+        List<Member> findAll = repository.findAll();
+
+        // then
+        for (Member member : findAll) {
+
+            // 지연 로딩으로 인한 N + 1 문제 발생.
+//            System.out.println("member = " + member.getTeam().getName());
+
+            // Hibername 기능으로 확인 ( 지연 로딩 여부를 확인. )
+            boolean initialized = Hibernate.isInitialized(member.getTeam());
+            System.out.println("initialized = " + initialized);
+
+            // JPA 표준 방법으로 확인.
+            PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+            boolean loaded = util.isLoaded(member.getTeam());
+            System.out.println("loaded = " + loaded);
+        }
+
+        assertThat(findAll.size()).isEqualTo(4);
 
     }
 }
