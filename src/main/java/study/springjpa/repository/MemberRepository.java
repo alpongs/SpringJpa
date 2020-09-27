@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.QueryHint;
 
 import study.springjpa.model.Member;
 import study.springjpa.model.dto.MemberDto;
@@ -185,6 +188,26 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m")
     List<Member> findMemberEntityGraph();
 
+    /**
+     * method Name 쿼리를 정보 가져오기.
+     * @param name      검색하는 이름.
+     * @return          검색된 리스트.
+     */
     @EntityGraph(attributePaths = {"team"})
     List<Member> findEntityGraphByName(@Param("name") String name);
+
+    /**
+     * Transaction readOnly 구현하는 방법이 아닌 JPA 기능에서 힌트를 이용하는 방법.
+     * @param name      검색하는 Member
+     * @return          검색된 Member
+     */
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    Member findReadOnlyByName(String name);
+
+    /**
+     * Dirty Checking 저장 인터페이스.
+     * @param name      검색된 이름.
+     * @return          검색된 Member
+     */
+    Member findDirtyCheckingByName(String name);
 }

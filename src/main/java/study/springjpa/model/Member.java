@@ -55,4 +55,7 @@ public class Member {
         team.getMembers().add(this);
     }
 
+    public void changeName(String name){
+        this.name = name;
+    }
 }
