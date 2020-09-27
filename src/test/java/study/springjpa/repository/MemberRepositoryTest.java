@@ -403,4 +403,30 @@ class MemberRepositoryTest {
         assertThat(map.getSize()).isEqualTo(10);
 
     }
+
+    @Test
+    void bulkUpdateAgeTest() {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        // when
+        int result = memberRepository.bulkUpdateAge(12);
+
+
+        // then
+        assertThat(result).isEqualTo(3);
+
+    }
 }

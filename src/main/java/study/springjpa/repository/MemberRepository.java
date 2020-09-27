@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -150,4 +151,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         , countQuery = "select count(m.name) from Member m where m.age = :age")
     Page<Member> findMemberAllCountBy(@Param("age") int age, Pageable pageable);
 
+
+    /**
+     * Modifying 애노테이션이 있어야 에러가 발생하지 않는다.
+     * @param age           나이 조건.
+     * @return              조건에 의해 update 수행이 된 row 수량 반환.
+     */
+    @Modifying
+    @Query("update Member m set m.age = m.age + 1 where m.age > :age")
+    int bulkUpdateAge(@Param("age") int age);
 }
