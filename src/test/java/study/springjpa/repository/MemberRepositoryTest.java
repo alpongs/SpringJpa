@@ -21,6 +21,7 @@ import study.springjpa.model.Member;
 import study.springjpa.model.Team;
 import study.springjpa.model.dto.MemberDto;
 
+import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -612,5 +613,36 @@ class MemberRepositoryTest {
     }
 
 
+    @Test
+    void auditingTest() throws InterruptedException {
+        // given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 20, teamA);
+        Member member3 = new Member("Member3", 30, teamB);
+        Member member4 = new Member("Member4", 40, teamB);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        em.flush();
+        em.clear();
+
+
+        // when
+        Member dirtyCheckingByName = memberRepository.findDirtyCheckingByName("Member1");
+
+        sleep(1000);
+
+        // then
+        assertThat(dirtyCheckingByName.getName()).isEqualTo("Member1");
+        dirtyCheckingByName.changeName("Korea1");
+
+    }
 
 }
