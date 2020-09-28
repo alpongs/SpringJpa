@@ -10,6 +10,7 @@ import javax.persistence.MappedSuperclass;
 
 import lombok.Getter;
 
+
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
