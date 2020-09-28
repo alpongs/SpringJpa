@@ -18,8 +18,9 @@ import javax.persistence.QueryHint;
 
 import study.springjpa.model.Member;
 import study.springjpa.model.dto.MemberDto;
+import study.springjpa.repository.custom.MemberRepositoryCustom;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     /**
      * 이름으로 검색하여 가져올때 인터페이스 선언.
@@ -210,4 +211,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @return          검색된 Member
      */
     Member findDirtyCheckingByName(String name);
+
 }
